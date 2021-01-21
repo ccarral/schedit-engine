@@ -1,0 +1,12 @@
+/target
+**/*.rs.bk
+Cargo.lock
+.cargo-ok
+tags
+bin/
+pkg/
+wasm-pack.log
+.appveyor.yml
+Session.vim
+*.ods
+*.xlsx
