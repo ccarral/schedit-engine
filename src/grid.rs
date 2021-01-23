@@ -1,11 +1,12 @@
 use schedule_engine::grid::{Grid, Pool};
+use serde::Serialize;
 use std::collections::hash_map::HashMap;
 
 pub type UaemGrid = Grid<IdList, HashMap<String, String>>;
 
 pub type UaemPool = Pool<IdList, HashMap<String, String>>;
 
-#[derive(Debug, Eq, Clone)]
+#[derive(Debug, Eq, Clone, Serialize)]
 pub struct IdList {
     pub id_list: Vec<String>,
 }

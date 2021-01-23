@@ -54,21 +54,25 @@ pub fn read_grid_records(csv: &str) -> Result<Vec<UaemPool>> {
 
         let mut found = false;
 
-        for pool in &mut pool_list {
+        let mut found_pool_idx = 0;
+
+        for (idx, pool) in &mut pool_list.iter().enumerate() {
             if grid.pool_id == pool.pool_id {
-                pool.push(grid);
+                found_pool_idx = idx;
                 found = true;
                 break;
             }
         }
 
         if !found {
-            let new_pool = {
+            let mut new_pool = {
                 let id_list = IdList { id_list };
                 UaemPool::new(id_list)
             };
-
+            new_pool.push(grid);
             pool_list.push(new_pool);
+        } else {
+            pool_list[found_pool_idx].push(grid);
         }
     }
 
