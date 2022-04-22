@@ -4,7 +4,6 @@ use anyhow::Result;
 use csv::ReaderBuilder;
 use serde::Deserialize;
 use std::collections::hash_map::HashMap;
-use std::fmt::format;
 
 #[derive(Deserialize, Debug)]
 struct ScheduleRecord {

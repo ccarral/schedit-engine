@@ -3,6 +3,7 @@ name = "uaemex-horarios"
 version = "0.1.0"
 authors = ["Carlos Carral C. <carloscarral13@gmail.com>"]
 edition = "2018"
+description = "Librería escrita en rust y compilada wasm para una aplicación de creación de horarios"
 
 [lib]
 crate-type = ["cdylib", "rlib"]

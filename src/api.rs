@@ -9,6 +9,8 @@ struct ApiErr {
     pub msg: String,
 }
 
+/// Inicializar las listas de *grupos* de las cuales el algoritmo puede obtener para
+/// iterar en las combinaciones.
 #[wasm_bindgen]
 pub fn api_init_pools(csv: &str) -> Result<JsValue, JsValue> {
     match read_grid_records(csv) {
@@ -20,8 +22,12 @@ pub fn api_init_pools(csv: &str) -> Result<JsValue, JsValue> {
     }
 }
 
+/// Inicializar las listas de materias dentro de las cuales el algoritmo
+/// puede generar combinaciones. Toma como parámetro el csv de las materias con el siguiente
+/// formato:
+/// id, 'Nombre Profesor', 'Clave', 'Nombre de la materia','Grupo','ini_lun','fin_lun',...,'ini_dom','fin_dom'
 #[wasm_bindgen]
-pub fn api_read_subjects(csv: &str) -> Result<JsValue, JsValue> {
+pub fn api_leer_materias(csv: &str) -> Result<JsValue, JsValue> {
     if let Ok(subjects) = read_subject_records(csv) {
         Ok(JsValue::from_serde(&subjects).unwrap())
     } else {
@@ -71,7 +77,7 @@ mod test {
 
         let mut grid_count = 0;
         for pool in pools {
-            for grid in pool.grid_list {
+            for _grid in pool.grid_list {
                 grid_count += 1;
             }
         }
