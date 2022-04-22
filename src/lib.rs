@@ -2,6 +2,8 @@ pub mod api;
 pub mod csv;
 mod grid;
 pub mod subject;
+#[cfg(test)]
+mod test;
 mod utils;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global

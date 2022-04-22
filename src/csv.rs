@@ -4,6 +4,7 @@ use anyhow::Result;
 use csv::ReaderBuilder;
 use serde::Deserialize;
 use std::collections::hash_map::HashMap;
+use std::fmt::format;
 
 #[derive(Deserialize, Debug)]
 struct ScheduleRecord {
@@ -50,7 +51,8 @@ pub fn read_grid_records(csv: &str) -> Result<Vec<UaemPool>> {
             record.time_values,
             "%H:%M",
             data,
-        )?;
+        )
+        .map_err(|e| anyhow::anyhow!("Error al hacer parse de id {:?}:{}", id_list, e))?;
 
         let mut found = false;
 
@@ -114,7 +116,7 @@ mod test {
 
     #[test]
     fn read_csv_subjects() {
-        let csv = std::fs::read_to_string("resources/2021/A/subjects.csv").unwrap();
+        let csv = std::fs::read_to_string("resources/2022/A/materias_ico_2022A.csv").unwrap();
 
         let subjects = read_subject_records(&csv).unwrap();
         for subject in subjects {
