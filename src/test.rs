@@ -3,7 +3,7 @@ use schedule_engine::engine::{engine_main, EngineParams};
 
 #[test]
 pub fn test_correctness() {
-    let pools = csv::read_grid_records(&CSV).unwrap();
+    let (subjects, pools) = csv::read_grid_records(&CSV).unwrap();
     let params = EngineParams {
         seeds: vec![],
         pool_list: pools,

@@ -1,8 +1,8 @@
 [package]
 name = "uaemex-horarios"
-version = "0.1.0"
+version = "0.1.4"
 authors = ["Carlos Carral C. <carloscarral13@gmail.com>"]
-edition = "2018"
+edition = "2021"
 description = "Librería escrita en rust y compilada wasm para una aplicación de creación de horarios"
 
 [lib]
@@ -13,6 +13,7 @@ default = ["console_error_panic_hook","wee_alloc"]
 
 [dependencies]
 wasm-bindgen = {version = "0.2.63" }
+wasm-bindgen-futures = "0.4.30"
 schedule-engine = {path = "../schedule-engine"}
 serde = { version = "1.0.119", features = ["derive"] }
 csv = "1.1"

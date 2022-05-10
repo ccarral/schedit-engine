@@ -1,5 +1,6 @@
 use crate::csv::{read_grid_records, read_subject_records};
-use crate::grid::{UaemEngineParams, UaemGrid};
+use crate::grid::{IdList, UaemEngineParams, UaemGrid, UaemPool};
+use crate::subject::Subject;
 use schedule_engine::engine::engine_main;
 use serde::Serialize;
 use wasm_bindgen::prelude::*;
@@ -9,33 +10,28 @@ struct ApiErr {
     pub msg: String,
 }
 
-/// Inicializar las listas de *grupos* de las cuales el algoritmo puede obtener para
-/// iterar en las combinaciones.
-#[wasm_bindgen]
-pub fn api_init_pools(csv: &str) -> Result<JsValue, JsValue> {
-    match read_grid_records(csv) {
-        Ok(pools) => Ok(JsValue::from_serde(&pools).unwrap()),
-        Err(e) => {
-            let err = JsValue::from_serde(&ApiErr { msg: e.to_string() }).unwrap();
-            Err(err)
-        }
-    }
+#[derive(Serialize)]
+struct ApiInitPoolsResult {
+    subjects: Vec<Subject<IdList>>,
+    pools: Vec<UaemPool>,
 }
 
-/// Inicializar las listas de materias dentro de las cuales el algoritmo
-/// puede generar combinaciones. Toma como parámetro el csv de las materias con el siguiente
-/// formato:
-/// id, 'Nombre Profesor', 'Clave', 'Nombre de la materia','Grupo','ini_lun','fin_lun',...,'ini_dom','fin_dom'
+/// Inicializar las listas de grupos y materias de las cuales el algoritmo puede obtener para
+/// iterar en las combinaciones. Esta función implícitamente también revisa que el csv ingresado
+/// también sea válido
 #[wasm_bindgen]
-pub fn api_leer_materias(csv: &str) -> Result<JsValue, JsValue> {
-    if let Ok(subjects) = read_subject_records(csv) {
-        Ok(JsValue::from_serde(&subjects).unwrap())
-    } else {
-        let err = JsValue::from_serde(&ApiErr {
-            msg: "API Error!".to_string(),
-        })
-        .unwrap();
-        Err(err)
+pub async fn api_init_pools(csv: String) -> Result<JsValue, JsValue> {
+    match read_grid_records(&csv) {
+        Ok((subjects, pools)) => {
+            Ok(JsValue::from_serde(&ApiInitPoolsResult { subjects, pools }).unwrap())
+        }
+        Err(e) => {
+            let err = JsValue::from_serde(&ApiErr {
+                msg: format!("schedule-engine api err:{}", e),
+            })
+            .unwrap();
+            Err(err)
+        }
     }
 }
 
@@ -73,7 +69,7 @@ mod test {
     #[test]
     fn test_get_pools() {
         let csv = std::fs::read_to_string("resources/2022/A/plantilla_ico_2022A.csv").unwrap();
-        let pools = read_grid_records(&csv).unwrap();
+        let (subject_list, pools) = read_grid_records(&csv).unwrap();
 
         let mut grid_count = 0;
         for pool in pools {

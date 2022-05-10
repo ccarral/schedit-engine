@@ -15,7 +15,8 @@ struct ScheduleRecord {
     time_values: [String; 14],
 }
 
-pub fn read_grid_records(csv: &str) -> Result<Vec<UaemPool>> {
+// Should yield both a list of pools and a list of subjects
+pub fn read_grid_records(csv: &str) -> Result<(Vec<Subject<IdList>>, Vec<UaemPool>)> {
     let mut reader = ReaderBuilder::new()
         .has_headers(false)
         .quote(b'\'')
@@ -77,10 +78,29 @@ pub fn read_grid_records(csv: &str) -> Result<Vec<UaemPool>> {
         }
     }
 
-    Ok(pool_list)
+    fn pool_to_subject(pool: &UaemPool) -> Result<Subject<IdList>> {
+        let grids = pool.grids();
+        let first_grid = grids.iter().next().ok_or(anyhow::format_err!(
+            "Pool with id {:#?} has no grids.",
+            pool.pool_id
+        ))?;
+
+        let name = first_grid.data().get("nombre").unwrap();
+        let id = first_grid.pool_id.clone();
+
+        Ok(Subject::new(name.to_string(), id))
+    }
+
+    let subject_list: Vec<Subject<IdList>> = pool_list
+        .iter()
+        .map(pool_to_subject)
+        .collect::<Result<Vec<Subject<IdList>>>>()?;
+
+    Ok((subject_list, pool_list))
 }
 
-pub fn read_subject_records(csv: &str) -> Result<Vec<Subject>> {
+#[deprecated]
+pub fn read_subject_records(csv: &str) -> Result<Vec<Subject<Vec<String>>>> {
     const ID_IDX: usize = 0;
     const NAME_IDX: usize = 1;
 
@@ -119,7 +139,7 @@ mod test {
 
         let subjects = read_subject_records(&csv).unwrap();
         for subject in subjects {
-            for id in subject.id_list {
+            for id in subject.subject_id {
                 assert!(!id.contains(char::is_whitespace));
             }
         }
