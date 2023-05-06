@@ -11,6 +11,7 @@ struct ApiErr {
 }
 
 #[derive(Serialize)]
+#[wasm_bindgen]
 struct ApiInitPoolsResult {
     subjects: Vec<Subject<IdList>>,
     pools: Vec<UaemPool>,
